@@ -18,14 +18,7 @@ None. This skill is the entry point of the marketing workflow (spec Section 5.1)
 
 ## Step 0 (MANDATORY): Resolve project root
 
-**Before any file read, file write, or directory creation, pin the project root to the user's current working directory.** This makes the plugin CWD-agnostic and shippable — `.marketing/` must land wherever the user invoked `/marketing:init`, never in the plugin install directory, never in a hardcoded path.
-
-1. Run `pwd` via `Bash` and capture the output as `PROJECT_ROOT` (remember it for the rest of this session).
-2. Every `.marketing/...` path referenced below is shorthand for `$PROJECT_ROOT/.marketing/...`. When you call:
-   - `Bash mkdir -p` → use `"$PROJECT_ROOT/.marketing/..."` (quoted, absolute).
-   - `Write` → pass the absolute path `<PROJECT_ROOT>/.marketing/context.md`, NEVER a bare relative path (the `Write` tool rejects relatives).
-   - `Read` / `Glob` → scope to `$PROJECT_ROOT` for the discovery pass below.
-3. If `pwd` returns the plugin marketplace directory (contains `marketplaces/marketing-plugin` in the path) or the user's home directory with no project context, STOP and ask: "I'm about to create `.marketing/` in `<path>` — is that the project directory you want? If not, `cd` into your project and re-run `/marketing:init`." Do not proceed without confirmation.
+Run `pwd` via `Bash` once and capture the output as `PROJECT_ROOT`. That's it. `.marketing/` is created at `$PROJECT_ROOT/.marketing/`. Do NOT ask the user to confirm the directory. Do NOT compare against `CLAUDE.md`, command arguments, or any other path — `pwd` is the only source of truth. Every `mkdir`/`Write` call below must use the absolute path `"$PROJECT_ROOT/.marketing/..."` because the `Write` tool rejects bare relatives.
 
 ## What you will do
 
