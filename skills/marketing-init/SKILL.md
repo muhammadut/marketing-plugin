@@ -16,6 +16,17 @@ Fire when the user runs `/marketing:init` or says things like "start a marketing
 
 None. This skill is the entry point of the marketing workflow (spec Section 5.1). It runs against an empty or near-empty project directory.
 
+## Step 0 (MANDATORY): Resolve project root
+
+**Before any file read, file write, or directory creation, pin the project root to the user's current working directory.** This makes the plugin CWD-agnostic and shippable — `.marketing/` must land wherever the user invoked `/marketing:init`, never in the plugin install directory, never in a hardcoded path.
+
+1. Run `pwd` via `Bash` and capture the output as `PROJECT_ROOT` (remember it for the rest of this session).
+2. Every `.marketing/...` path referenced below is shorthand for `$PROJECT_ROOT/.marketing/...`. When you call:
+   - `Bash mkdir -p` → use `"$PROJECT_ROOT/.marketing/..."` (quoted, absolute).
+   - `Write` → pass the absolute path `<PROJECT_ROOT>/.marketing/context.md`, NEVER a bare relative path (the `Write` tool rejects relatives).
+   - `Read` / `Glob` → scope to `$PROJECT_ROOT` for the discovery pass below.
+3. If `pwd` returns the plugin marketplace directory (contains `marketplaces/marketing-plugin` in the path) or the user's home directory with no project context, STOP and ask: "I'm about to create `.marketing/` in `<path>` — is that the project directory you want? If not, `cd` into your project and re-run `/marketing:init`." Do not proceed without confirmation.
+
 ## What you will do
 
 0. **Discover existing project knowledge BEFORE asking any questions.** Real projects often already have substantial marketing-relevant context in the repo — a business thesis, vertical analysis, call-supply strategy, year-one master plan, founder profile in CLAUDE.md. Re-asking the founder things they already wrote down wastes their patience. Before the interview, do this discovery pass:
@@ -48,7 +59,7 @@ None. This skill is the entry point of the marketing workflow (spec Section 5.1)
    └── attribution/       (closed-won/closed-lost feedback from sales-plugin)
    ```
 
-   Create every directory with `Bash` (`mkdir -p`). Each sub-vertical subdir also needs a `research/` subfolder created (e.g., `paid/research/`, `seo/research/`, etc.) where the per-sub-vertical researcher writes `state-of-<sub-vertical>.md`.
+   Create every directory with `Bash` (`mkdir -p "$PROJECT_ROOT/.marketing/paid/research" "$PROJECT_ROOT/.marketing/seo/research" ...` — always quoted, always absolute, using the `PROJECT_ROOT` captured in Step 0). Each sub-vertical subdir also needs a `research/` subfolder created (e.g., `paid/research/`, `seo/research/`, etc.) where the per-sub-vertical researcher writes `state-of-<sub-vertical>.md`.
 
 2. **Interview the user one question at a time.** Do not batch. Wait for each answer before asking the next. This matches the founder profile and the brainstorming-skill rule. Ask:
 
