@@ -14,7 +14,7 @@
         "repo": "muhammadut/marketing-plugin"
       },
       "description": "12-agent marketing plugin organized into 5 sub-verticals. v0.1 ships Paid Acquisition fully built (Google Ads API wiring, Enhanced Conversions for Leads, offline conversion uploads, dual-account suspension protection, hard cost safeguards) and stubs the other 4 sub-verticals. Ad creative uses the same brief-and-judge architecture as brand: creative-ops writes per-channel briefs, the user generates externally, creative-ops judges via multimodal vision. State lives in .marketing/ in the target project. Composes with brand (reads voice.md + tokens.json) and sales (provides leads, consumes closed/lost for attribution).",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "license": "MIT",
       "keywords": [
         "marketing",
