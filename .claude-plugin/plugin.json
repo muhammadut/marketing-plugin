@@ -1,0 +1,22 @@
+{
+  "name": "marketing",
+  "version": "0.1.0",
+  "description": "Marketing plugin organized into 5 sub-verticals — Paid Acquisition, SEO & Content, Lifecycle & Retention, Positioning & Messaging, Analytics & Experimentation — with 12 specialist agents (1 director + 5 leads + 5 researchers + 1 creative-ops). Paid Acquisition is fully built for v0.1; the other 4 sub-verticals ship with stubs. Ad creative uses the same brief-and-judge architecture as the brand plugin: creative-ops writes channel-specific creative briefs, the user generates externally across Nano Banana Pro / Veo 3.1 / Higgsfield / Midjourney, and creative-ops judges returned candidates via multimodal vision. Output lives in .marketing/ in the target project.",
+  "author": {
+    "name": "muhammadut"
+  },
+  "license": "MIT",
+  "keywords": [
+    "marketing",
+    "paid-acquisition",
+    "google-ads",
+    "seo",
+    "lifecycle",
+    "positioning",
+    "analytics",
+    "experimentation",
+    "multi-agent",
+    "creative-brief",
+    "canadian"
+  ]
+}

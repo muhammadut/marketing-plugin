@@ -1,0 +1,202 @@
+# Event Taxonomy — v0.1 stub
+# Generated-by: analytics-experimentation-lead
+# Depends-on: .marketing/context.md, .marketing/positioning/positioning.md, .greenfield/data-model.md (if present)
+# Sources-cited: knowledge/analytics/kohavi-experiment-checklist.md, knowledge/analytics/event-taxonomy-template.md
+#
+# v0.1 stub — the analytics-experimentation sub-vertical is stubbed in v0.1; this file
+# is the canonical starter shape for v0.2's full event taxonomy generator. It is also
+# what gets written to .greenfield/events.yaml (if greenfield-plugin is present) so the
+# scaffolded app can instrument these events at build time.
+#
+# Conventions:
+#   - Event names are snake_case, past-tense verbs (sign_up, call_received, churn).
+#   - Properties are snake_case, primitive types only (string, int, float, bool, iso_date).
+#   - pii_classification is one of:
+#       - none: no personal information
+#       - low: pseudo-identifier (anonymous_id, session_id)
+#       - medium: linkable identifier (user_id, account_id)
+#       - high: directly identifying (email, phone, full_name, ip_address)
+#   - Every event MUST be cited against a marketing or product reason for collection
+#     (see "rationale" field). No event without a stated reason — Kohavi/PostHog principle:
+#     instrumentation without intent becomes data swamp.
+
+version: 0.1
+project: <project-slug>
+last_updated: <ISO-8601>
+owner: analytics-experimentation-lead
+
+events:
+
+  sign_up:
+    description: A new user has created an account.
+    rationale: Top-of-funnel marketing conversion. Tied to paid attribution via gclid.
+    properties:
+      user_id:
+        type: string
+        pii_classification: medium
+        required: true
+      email:
+        type: string
+        pii_classification: high
+        required: true
+        hash_for_export: true   # never export raw to analytics tools
+      signup_method:
+        type: string
+        enum: [email, google, apple, phone]
+        pii_classification: none
+        required: true
+      utm_source:
+        type: string
+        pii_classification: none
+        required: false
+      utm_medium:
+        type: string
+        pii_classification: none
+        required: false
+      utm_campaign:
+        type: string
+        pii_classification: none
+        required: false
+      gclid:
+        type: string
+        pii_classification: low
+        required: false
+      referrer_url:
+        type: string
+        pii_classification: low
+        required: false
+      created_at:
+        type: iso_date
+        pii_classification: none
+        required: true
+
+  activated:
+    description: New user has completed the activation milestone (e.g., first call placed, first listing created).
+    rationale: Mid-funnel signal that the user has experienced product value. The most-important leading indicator of retention per Reforge/Sean Ellis.
+    properties:
+      user_id:
+        type: string
+        pii_classification: medium
+        required: true
+      activation_milestone:
+        type: string
+        enum: [first_call_placed, first_listing_created, first_message_sent]
+        pii_classification: none
+        required: true
+      time_to_activation_seconds:
+        type: int
+        pii_classification: none
+        required: true
+      activated_at:
+        type: iso_date
+        pii_classification: none
+        required: true
+
+  call_received:
+    description: An inbound call was received via a routing number tied to a campaign.
+    rationale: Primary marketing top-of-funnel conversion for pay-per-call. Captures gclid for Google Ads attribution.
+    properties:
+      call_id:
+        type: string
+        pii_classification: low
+        required: true
+      campaign_id:
+        type: string
+        pii_classification: none
+        required: true
+      ad_group_id:
+        type: string
+        pii_classification: none
+        required: false
+      gclid:
+        type: string
+        pii_classification: low
+        required: false
+      caller_phone:
+        type: string
+        pii_classification: high
+        required: true
+        hash_for_export: true
+      called_number:
+        type: string
+        pii_classification: low
+        required: true
+      received_at:
+        type: iso_date
+        pii_classification: none
+        required: true
+      duration_seconds:
+        type: int
+        pii_classification: none
+        required: false   # populated on call_ended
+
+  call_billed:
+    description: A call has been billed to a contractor (the load-bearing pay-per-call conversion event).
+    rationale: PRIMARY OPTIMIZATION TARGET. Uploaded to Google Ads as offline conversion via the generated upload-offline-conversions.py script. Smart Bidding optimizes the entire campaign against this signal.
+    properties:
+      call_id:
+        type: string
+        pii_classification: low
+        required: true
+      contractor_id:
+        type: string
+        pii_classification: medium
+        required: true
+      gclid:
+        type: string
+        pii_classification: low
+        required: false   # if missing, falls back to Enhanced Conversions for Leads
+      hashed_phone:
+        type: string
+        pii_classification: low   # already hashed (sha256) before this event fires
+        required: false
+      hashed_email:
+        type: string
+        pii_classification: low
+        required: false
+      bill_amount_cad:
+        type: float
+        pii_classification: none
+        required: true
+      billed_at:
+        type: iso_date
+        pii_classification: none
+        required: true
+
+  churn:
+    description: A contractor or user has churned (cancelled, downgraded to inactive, or stopped engaging).
+    rationale: Lifecycle and retention signal. Triggers winback flow eligibility. Required for cohort retention analysis per Reforge.
+    properties:
+      user_id:
+        type: string
+        pii_classification: medium
+        required: true
+      churn_type:
+        type: string
+        enum: [voluntary_cancel, involuntary_payment_fail, soft_inactive]
+        pii_classification: none
+        required: true
+      tenure_days:
+        type: int
+        pii_classification: none
+        required: true
+      lifetime_value_cad:
+        type: float
+        pii_classification: none
+        required: true
+      reason_code:
+        type: string
+        pii_classification: none
+        required: false   # populated only for voluntary_cancel
+      churned_at:
+        type: iso_date
+        pii_classification: none
+        required: true
+
+# v0.2 expansion notes:
+#   - Add experiment_assigned, experiment_converted events for A/B test SRM checks.
+#   - Add lifecycle events: email_sent, email_opened, email_clicked, sms_sent, push_received.
+#   - Add product events derived from .greenfield/data-model.md (page_viewed, button_clicked, etc.).
+#   - Add attribution touch events (touchpoint_observed) for multi-touch attribution model.
+#   - Wire the schema validation: every event the application emits MUST appear in this file
+#     or build fails. See knowledge/analytics/event-taxonomy-template.md for the validator pattern.

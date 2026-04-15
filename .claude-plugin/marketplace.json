@@ -1,0 +1,34 @@
+{
+  "name": "marketing-plugin",
+  "owner": {
+    "name": "muhammadut"
+  },
+  "metadata": {
+    "description": "Marketing plugin organized into 5 sub-verticals (Paid Acquisition, SEO & Content, Lifecycle & Retention, Positioning & Messaging, Analytics & Experimentation) with 12 specialist agents and a brief-and-judge architecture for ad creative."
+  },
+  "plugins": [
+    {
+      "name": "marketing",
+      "source": {
+        "source": "github",
+        "repo": "muhammadut/marketing-plugin"
+      },
+      "description": "12-agent marketing plugin organized into 5 sub-verticals. v0.1 ships Paid Acquisition fully built (Google Ads API wiring, Enhanced Conversions for Leads, offline conversion uploads, dual-account suspension protection, hard cost safeguards) and stubs the other 4 sub-verticals. Ad creative uses the same brief-and-judge architecture as brand: creative-ops writes per-channel briefs, the user generates externally, creative-ops judges via multimodal vision. State lives in .marketing/ in the target project. Composes with brand (reads voice.md + tokens.json) and sales (provides leads, consumes closed/lost for attribution).",
+      "version": "0.1.0",
+      "license": "MIT",
+      "keywords": [
+        "marketing",
+        "paid-acquisition",
+        "google-ads",
+        "seo",
+        "lifecycle",
+        "positioning",
+        "analytics",
+        "experimentation",
+        "multi-agent",
+        "creative-brief",
+        "canadian"
+      ]
+    }
+  ]
+}
